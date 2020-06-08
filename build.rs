@@ -14,6 +14,8 @@ fn main() {
     println!("cargo:rustc-link-lib=static=avformat");
     println!("cargo:rustc-link-lib=static=avcodec");
     println!("cargo:rustc-link-lib=static=avutil");
+    println!("cargo:rustc-link-lib=static=swscale");
+    println!("cargo:rustc-link-lib=static=swresample");
     println!("cargo:rustc-link-lib=static=xml2");
     println!("cargo:rustc-link-lib=static=ssl");
     println!("cargo:rustc-link-lib=static=crypto");
@@ -33,13 +35,25 @@ fn main() {
         .rustified_enum("*")
         .prepend_enum_name(false)
         .derive_eq(true)
-        // The input header we would like to generate
-        // bindings for.
-        .header(ffmpeg_static_path().join("include/libavformat/avformat.h").to_string_lossy())
         // Tell cargo to invalidate the built crate whenever any of the
         // included header files changed.
         // .parse_callbacks(Box::new(bindgen::CargoCallbacks))
         .parse_callbacks(Box::new(IntCallbacks))
+        // The input header we would like to generate
+        // bindings for.
+        .header(ffmpeg_static_path().join("include/libavformat/avformat.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavdevice/avdevice.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavcodec/avcodec.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavfilter/avfilter.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavutil/avutil.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavutil/imgutils.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavutil/pixfmt.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavutil/time.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libswscale/swscale.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavfilter/buffersink.h").to_string_lossy())
+        .header(ffmpeg_static_path().join("include/libavfilter/buffersrc.h").to_string_lossy())
+
+
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.

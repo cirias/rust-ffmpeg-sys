@@ -19,5 +19,5 @@ doctest = false
 libc = "0.2"
 
 [build-dependencies]
-bindgen = "0.53.2"
+bindgen = "0.51.1"
 regex   = "1.3"
