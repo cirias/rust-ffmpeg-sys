@@ -4,11 +4,14 @@ extern crate regex;
 use std::env;
 use std::path::PathBuf;
 
+use bindgen::callbacks::{IntKind, MacroParsingBehavior, ParseCallbacks};
 use regex::Regex;
-use bindgen::callbacks::{IntKind, ParseCallbacks, MacroParsingBehavior};
 
 fn main() {
-    println!("cargo:rustc-link-search=native={}", ffmpeg_static_path().join("lib").to_string_lossy());
+    println!(
+        "cargo:rustc-link-search=native={}",
+        ffmpeg_static_path().join("lib").to_string_lossy()
+    );
     // Tell cargo to tell rustc to link the system bzip2
     // shared library.
     println!("cargo:rustc-link-lib=static=avformat");
@@ -41,19 +44,61 @@ fn main() {
         .parse_callbacks(Box::new(IntCallbacks))
         // The input header we would like to generate
         // bindings for.
-        .header(ffmpeg_static_path().join("include/libavformat/avformat.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavdevice/avdevice.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavcodec/avcodec.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavfilter/avfilter.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavutil/avutil.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavutil/imgutils.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavutil/pixfmt.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavutil/time.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libswscale/swscale.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavfilter/buffersink.h").to_string_lossy())
-        .header(ffmpeg_static_path().join("include/libavfilter/buffersrc.h").to_string_lossy())
-
-
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavformat/avformat.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavdevice/avdevice.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavcodec/avcodec.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavfilter/avfilter.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavutil/avutil.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavutil/imgutils.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavutil/pixfmt.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavutil/time.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libswscale/swscale.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavfilter/buffersink.h")
+                .to_string_lossy(),
+        )
+        .header(
+            ffmpeg_static_path()
+                .join("include/libavfilter/buffersrc.h")
+                .to_string_lossy(),
+        )
         // Finish the builder and generate the bindings.
         .generate()
         // Unwrap the Result and panic on failure.
@@ -76,11 +121,13 @@ impl ParseCallbacks for IntCallbacks {
         let codec_flag = Regex::new(r"^AV_CODEC_FLAG").unwrap();
         let error_max_size = Regex::new(r"^AV_ERROR_MAX_STRING_SIZE").unwrap();
 
-        if value >= i64::min_value() as i64 && value <= i64::max_value() as i64
+        if value >= i64::min_value() as i64
+            && value <= i64::max_value() as i64
             && ch_layout.is_match(_name)
         {
             Some(IntKind::ULongLong)
-        } else if value >= i32::min_value() as i64 && value <= i32::max_value() as i64
+        } else if value >= i32::min_value() as i64
+            && value <= i32::max_value() as i64
             && (codec_cap.is_match(_name) || codec_flag.is_match(_name))
         {
             Some(IntKind::UInt)
