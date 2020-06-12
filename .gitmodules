@@ -1,0 +1,3 @@
+[submodule "ffmpeg-static"]
+	path = ffmpeg-static
+	url = https://github.com/cirias/ffmpeg-static.git
